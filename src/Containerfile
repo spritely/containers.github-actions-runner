@@ -1,5 +1,10 @@
 FROM ghcr.io/actions/actions-runner:2.333.1
 
+# Tool versions
+# Obtain the version number from: https://github.com/docker/compose/releases
+# renovate: datasource=github-releases depName=docker/compose extractVersion=^v(?<version>.*)$
+ARG DOCKER_COMPOSE_VERSION=5.1.3
+
 USER root
 
 RUN apt-get update \
@@ -7,8 +12,16 @@ RUN apt-get update \
     # See: https://nodejs.org/en/about/previous-releases and https://nodejs.org/en/download/current
     && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y nodejs \
+    # Writable npm global prefix for the runner use
     && mkdir -p /home/runner/.npm-global \
     && chown -R runner:runner /home/runner/.npm-global \
+    # Docker Compose v2 plugin — needed for devcontainer builds that use compose
+    && mkdir -p /usr/local/lib/docker/cli-plugins \
+    && curl -SL "https://github.com/docker/compose/releases/download/v${DOCKER_COMPOSE_VERSION}/docker-compose-linux-$(uname -m)" \
+         -o /usr/local/lib/docker/cli-plugins/docker-compose \
+    && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose \
+    # Compat symlink for tools that still spawn the legacy 'docker-compose' name
+    && ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose \
     # Clean up
     && apt-get clean \
     && rm -rf /tmp/* \
