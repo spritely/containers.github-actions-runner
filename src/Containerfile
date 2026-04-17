@@ -2,7 +2,7 @@ FROM ghcr.io/actions/actions-runner:2.333.1
 
 USER root
 
-RUN apt-get update && apt-upgrade \
+RUN apt-get update \
     # Add latest Active LTS node.js 24 version
     # See: https://nodejs.org/en/about/previous-releases and https://nodejs.org/en/download/current
     && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
