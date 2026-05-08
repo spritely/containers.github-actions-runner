@@ -8,6 +8,7 @@ ARG DOCKER_COMPOSE_VERSION=5.1.3
 USER root
 
 RUN apt-get update \
+    && apt-get install -y gh git \
     # Add latest Active LTS node.js 24 version
     # See: https://nodejs.org/en/about/previous-releases and https://nodejs.org/en/download/current
     && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
