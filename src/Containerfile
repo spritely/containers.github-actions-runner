@@ -5,10 +5,17 @@ FROM ghcr.io/actions/actions-runner:2.334.0@sha256:b6614fce332517f74d0a76e7c762f
 # renovate: datasource=github-releases depName=docker/compose extractVersion=^v(?<version>.*)$
 ARG DOCKER_COMPOSE_VERSION=5.1.4
 
+# yq releases: https://github.com/mikefarah/yq/releases
+# renovate: datasource=github-releases depName=mikefarah/yq extractVersion=^v(?<version>.*)$
+ARG YQ_VERSION="${YQ_VERSION:-4.53.2}"
+
 USER root
 
 RUN apt-get update \
     && apt-get install -y gh git \
+    # Install yq (mikefarah/yq - Go-based YAML processor)
+    && curl -fsSL "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq \
+    && chmod +x /usr/local/bin/yq \
     # Add latest Active LTS node.js 24 version
     # See: https://nodejs.org/en/about/previous-releases and https://nodejs.org/en/download/current
     && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
