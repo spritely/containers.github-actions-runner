@@ -12,7 +12,7 @@ ARG YQ_VERSION="${YQ_VERSION:-4.53.2}"
 USER root
 
 RUN apt-get update \
-    && apt-get install -y gh git \
+    && apt-get install -y gh git sudo \
     # Install yq (mikefarah/yq - Go-based YAML processor)
     && curl -fsSL "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq \
     && chmod +x /usr/local/bin/yq \
@@ -20,7 +20,7 @@ RUN apt-get update \
     # See: https://nodejs.org/en/about/previous-releases and https://nodejs.org/en/download/current
     && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install -y nodejs \
-    # Writable npm global prefix for the runner use
+    # Writable npm global prefix so 'npm install -g' works without sudo
     && mkdir -p /home/runner/.npm-global \
     && chown -R runner:runner /home/runner/.npm-global \
     # Docker Compose v2 plugin — needed for devcontainer builds that use compose
@@ -30,6 +30,10 @@ RUN apt-get update \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose \
     # Compat symlink for tools that still spawn the legacy 'docker-compose' name
     && ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose \
+    # Passwordless sudo for runner — matches GitHub hosted runners so
+    # actions/setup-* can install tools into system directories
+    && echo 'runner ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/runner \
+    && chmod 0440 /etc/sudoers.d/runner \
     # Clean up
     && apt-get clean \
     && rm -rf /tmp/* \
