@@ -9,10 +9,14 @@ ARG DOCKER_COMPOSE_VERSION=5.1.4
 # renovate: datasource=github-releases depName=mikefarah/yq extractVersion=^v(?<version>.*)$
 ARG YQ_VERSION="${YQ_VERSION:-4.53.2}"
 
+# dotnet SDK releases: https://github.com/dotnet/sdk/releases
+# renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
+ARG DOTNET_VERSION=10.0.300
+
 USER root
 
 RUN apt-get update \
-    && apt-get install -y gh git sudo \
+    && apt-get install -y gh git \
     # Install yq (mikefarah/yq - Go-based YAML processor)
     && curl -fsSL "https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq \
     && chmod +x /usr/local/bin/yq \
@@ -30,10 +34,9 @@ RUN apt-get update \
     && chmod +x /usr/local/lib/docker/cli-plugins/docker-compose \
     # Compat symlink for tools that still spawn the legacy 'docker-compose' name
     && ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose \
-    # Passwordless sudo for runner — matches GitHub hosted runners so
-    # actions/setup-* can install tools into system directories
-    && echo 'runner ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/runner \
-    && chmod 0440 /etc/sudoers.d/runner \
+    # Install .NET SDK — pre-installed so actions/setup-dotnet finds /usr/share/dotnet
+    && curl -fsSL https://dot.net/v1/dotnet-install.sh | bash -s -- \
+         --version "${DOTNET_VERSION}" --install-dir /usr/share/dotnet \
     # Clean up
     && apt-get clean \
     && rm -rf /tmp/* \
@@ -42,4 +45,5 @@ RUN apt-get update \
 USER runner
 
 ENV NPM_CONFIG_PREFIX=/home/runner/.npm-global
-ENV PATH=/home/runner/.npm-global/bin:$PATH
+ENV DOTNET_ROOT=/usr/share/dotnet
+ENV PATH=/home/runner/.npm-global/bin:/usr/share/dotnet:$PATH
