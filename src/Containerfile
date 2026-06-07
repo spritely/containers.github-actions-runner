@@ -7,7 +7,7 @@ ARG DOCKER_COMPOSE_VERSION=5.1.4
 
 # yq releases: https://github.com/mikefarah/yq/releases
 # renovate: datasource=github-releases depName=mikefarah/yq extractVersion=^v(?<version>.*)$
-ARG YQ_VERSION="${YQ_VERSION:-4.53.2}"
+ARG YQ_VERSION=4.53.3
 
 # dotnet SDK releases: https://github.com/dotnet/sdk/releases
 # renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
