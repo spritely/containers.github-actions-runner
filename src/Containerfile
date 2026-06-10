@@ -11,7 +11,7 @@ ARG YQ_VERSION=4.53.3
 
 # dotnet SDK releases: https://github.com/dotnet/sdk/releases
 # renovate: datasource=github-releases depName=dotnet/sdk extractVersion=^v(?<version>.*)$
-ARG DOTNET_VERSION=10.0.300
+ARG DOTNET_VERSION=10.0.301
 
 USER root
 
