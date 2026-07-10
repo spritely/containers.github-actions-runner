@@ -3,7 +3,7 @@ FROM ghcr.io/actions/actions-runner:2.335.1@sha256:08c30b0a7105f64bddfc485d2487a
 # Tool versions
 # Obtain the version number from: https://github.com/docker/compose/releases
 # renovate: datasource=github-releases depName=docker/compose extractVersion=^v(?<version>.*)$
-ARG DOCKER_COMPOSE_VERSION=5.3.0
+ARG DOCKER_COMPOSE_VERSION=5.3.1
 
 # yq releases: https://github.com/mikefarah/yq/releases
 # renovate: datasource=github-releases depName=mikefarah/yq extractVersion=^v(?<version>.*)$
